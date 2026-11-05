@@ -1,0 +1,99 @@
+services:
+
+  database:
+    image: postgres:17-alpine
+    container_name: marketplace-db
+    restart: unless-stopped
+
+    environment:
+      POSTGRES_DB: marketplace
+      POSTGRES_USER: marketplace
+      POSTGRES_PASSWORD: marketplace_dev
+
+    ports:
+      - "5432:5432"
+
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U marketplace -d marketplace"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+    networks:
+      - marketplace-network
+
+
+  pgadmin:
+    image: dpage/pgadmin4:latest
+    container_name: marketplace-pgadmin
+    restart: unless-stopped
+
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@marketplace.com
+      PGADMIN_DEFAULT_PASSWORD: admin123
+
+    ports:
+      - "5050:80"
+
+    volumes:
+      - pgadmin_data:/var/lib/pgadmin
+
+    depends_on:
+      database:
+        condition: service_healthy
+
+    networks:
+      - marketplace-network
+
+  backend:
+    build:
+      context: ./backend
+
+    container_name: marketplace-backend
+    restart: unless-stopped
+
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://database:5432/marketplace
+      SPRING_DATASOURCE_USERNAME: marketplace
+      SPRING_DATASOURCE_PASSWORD: marketplace_dev
+      SERVER_PORT: 8080
+      APP_CORS_ALLOWED_ORIGINS: http://localhost:5173
+
+    ports:
+      - "8080:8080"
+
+    depends_on:
+      database:
+        condition: service_healthy
+
+    networks:
+      - marketplace-network
+
+
+  frontend:
+    build:
+      context: ./frontend
+
+    container_name: marketplace-frontend
+
+    ports:
+      - "5173:80"
+
+    depends_on:
+      - backend
+
+    networks:
+      - marketplace-network
+
+
+volumes:
+  postgres_data:
+  pgadmin_data:
+
+
+networks:
+  marketplace-network:
+    driver: bridge

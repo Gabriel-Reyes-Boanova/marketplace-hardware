@@ -1,0 +1,27 @@
+:root {
+  font-family: Inter, system-ui, Arial, sans-serif;
+  color: #20242b;
+  background: #f4f6f8;
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+}
+
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  min-width: 320px;
+  min-height: 100vh;
+}
+
+.container {
+  width: min(720px, calc(100% - 32px));
+  margin: 12vh auto;
+  padding: 32px;
+  background: white;
+  border-radius: 14px;
+  box-shadow: 0 8px 30px rgb(0 0 0 / 7%);
+}
+
+h1 { margin-top: 0; }
+.status { padding: 12px; background: #eef3f8; border-radius: 8px; }
