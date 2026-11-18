@@ -41,6 +41,11 @@ public class ExternalProduct extends Auditable{
     @Column(scale = 2,nullable = false,name = "source_price",precision = 12)
     private BigDecimal sourcePrice;
 
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "category", nullable = false,
+            foreignKey = @ForeignKey(name = "fk_external_product_category"))
+    private Category category;
+
     @Column(name = "last_synced_at")
     private OffsetDateTime lastSyncedAt;
 
