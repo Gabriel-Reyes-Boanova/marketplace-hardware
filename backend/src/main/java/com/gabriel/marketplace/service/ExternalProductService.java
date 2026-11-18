@@ -24,12 +24,39 @@ public class ExternalProductService {
                 .retrieve()
                 .body(DummyJsonProductsResponse.class);
 
-        if (response == null || response.products() == null) {
+        verifyDummyProductResponse(response);
+
+        if (response.products() == null) {
             throw new IllegalStateException(
-                    "Falha ao obter produtos do servidor externo."
+                    "A API externa não retornou a lista de produtos."
             );
         }
 
         return response.products();
+    }
+
+
+    public DummyJsonProductResponse findProductById(int id){
+
+        if (id <= 0) {
+            throw new IllegalArgumentException("O ID deve ser maior que zero.");
+        }
+
+        DummyJsonProductResponse response = restClient.get()
+                .uri("/products/{id}",id)
+                .retrieve()
+                .body(DummyJsonProductResponse.class);
+
+        verifyDummyProductResponse(response);
+
+        return  response;
+    }
+
+    private void verifyDummyProductResponse(Object response) {
+        if (response == null) {
+            throw new IllegalStateException(
+                    "A API externa retornou uma resposta vazia."
+            );
+        }
     }
 }
