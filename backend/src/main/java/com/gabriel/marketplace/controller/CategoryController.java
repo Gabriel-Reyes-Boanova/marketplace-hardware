@@ -1,6 +1,7 @@
 package com.gabriel.marketplace.controller;
 
 import com.gabriel.marketplace.service.CategoryService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
@@ -30,7 +31,7 @@ public class CategoryController {
     }
 
     @PostMapping
-    public ResponseEntity<CategoryResponse> createCategory(@RequestBody @Validated CategoryRequest request){
+    public ResponseEntity<CategoryResponse> createCategory(@RequestBody @Valid CategoryRequest request){
         CategoryResponse response = service.createCategory(request);
 
         URI location = ServletUriComponentsBuilder.fromCurrentRequest()
@@ -48,7 +49,7 @@ public class CategoryController {
     }
 
     @PutMapping
-    public ResponseEntity<CategoryResponse> updateCategory(@RequestParam String title, @RequestBody @Validated CategoryRequest request) {
+    public ResponseEntity<CategoryResponse> updateCategory(@RequestParam String title, @RequestBody @Valid CategoryRequest request) {
         CategoryResponse response = service.updateCategory(title, request);
         return ResponseEntity.ok(response);
     }
