@@ -11,25 +11,34 @@ import java.math.BigDecimal;
 import java.time.OffsetDateTime;
 import java.util.UUID;
 
-@AllArgsConstructor
-@NoArgsConstructor
-@Builder
-@Getter
+
 @Entity
-@Table(name = "external_product")
-public class ExternalProduct extends Auditable{
+@Table(
+        name = "external_product",
+        uniqueConstraints = {
+                @UniqueConstraint(
+                        name = "uk_provider_external_product",
+                        columnNames = {"provider", "external_product_id"}
+                )
+        }
+)
+@Getter
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
+public class ExternalProduct extends Auditable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
 
-    @Column(nullable = false,length = 80)
+    @Column(nullable = false, length = 80)
     private String provider;
 
-    @Column(nullable = false,length = 120,name = "external_product_id")
+    @Column(nullable = false, length = 120, name = "external_product_id")
     private String externalProductId;
 
-    @Column(nullable = false,length = 200)
+    @Column(nullable = false, length = 200)
     private String title;
 
     @Column(columnDefinition = "TEXT")
@@ -38,24 +47,27 @@ public class ExternalProduct extends Auditable{
     @Column(columnDefinition = "TEXT", name = "image_url")
     private String imageUrl;
 
-    @Column(scale = 2,nullable = false,name = "source_price",precision = 12)
+    @Column(precision = 12, scale = 2, name = "source_price")
     private BigDecimal sourcePrice;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(name = "category", nullable = false,
-            foreignKey = @ForeignKey(name = "fk_external_product_category"))
+    @JoinColumn(
+            name = "category_id",
+            nullable = false,
+            foreignKey = @ForeignKey(name = "fk_external_product_category")
+    )
     private Category category;
 
     @Column(name = "last_synced_at")
     private OffsetDateTime lastSyncedAt;
 
-    public void setLastSyncedAt(){
-        lastSyncedAt = OffsetDateTime.now();
+    public void setLastSyncedAt() {
+        this.lastSyncedAt = OffsetDateTime.now();
     }
 
     public void setSourcePrice(BigDecimal price) {
-        if (price == null || price.compareTo(BigDecimal.ZERO) <= 0) {
-            throw new IllegalArgumentException("O valor do preço deve ser maior que zero.");
+        if (price != null && price.compareTo(BigDecimal.ZERO) < 0) {
+            throw new IllegalArgumentException("Preço inválido.");
         }
         this.sourcePrice = price;
     }
