@@ -2,10 +2,7 @@ package com.gabriel.marketplace.entity;
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.util.List;
 import java.util.UUID;
@@ -22,9 +19,11 @@ public class Category extends Auditable{
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
 
+    @Setter
     @NotBlank(message = "A categoria deve ter um titulo")
     private String title;
 
+    @Setter
     @NotBlank(message = "A categoria deve ter uma descricao")
     @Column(columnDefinition = "TEXT")
     private String description;

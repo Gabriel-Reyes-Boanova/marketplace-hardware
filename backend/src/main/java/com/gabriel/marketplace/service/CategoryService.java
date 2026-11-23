@@ -48,6 +48,12 @@ public class CategoryService {
             );
         }
 
+        if(repository.existsByTitle(request.title().trim().toLowerCase())){
+            throw new IllegalArgumentException(
+                    "Já existe uma categoria com esse título"
+            );
+        }
+
         Category category = convertCategory(request);
 
         Category categorySaved = repository.save(category);
@@ -55,7 +61,45 @@ public class CategoryService {
         return convertResponse(categorySaved);
     }
 
-    public Category convertCategory(CategoryRequest request){
+    public void deleteCategory(String title){
+        if(title.isBlank()){
+            throw new IllegalArgumentException("O título não pode estar vazio");
+        }
+
+        if(!repository.existsByTitle(title)){
+            throw new CategoryNotFindException("A categoria não foi encontrada");
+        }
+
+        repository.deleteByTitle(title);
+    }
+
+    public CategoryResponse updateCategory(String title, CategoryRequest request) {
+        if (title == null || title.isBlank()) {
+            throw new IllegalArgumentException(
+                    "O título não pode estar vazio"
+            );
+        }
+
+        if (request == null) {
+            throw new IllegalArgumentException(
+                    "Não foi enviada nenhuma categoria"
+            );
+        }
+
+        Category category = repository.findByTitle(title.trim().toLowerCase())
+                .orElseThrow(() -> new CategoryNotFindException(
+                        "A categoria não foi encontrada"
+                ));
+
+        category.setTitle(request.title());
+        category.setDescription(request.description());
+
+        Category updatedCategory = repository.save(category);
+
+        return convertResponse(updatedCategory);
+    }
+
+    private Category convertCategory(CategoryRequest request){
         return Category.builder()
                 .title(request.title())
                 .description(request.description()).build();

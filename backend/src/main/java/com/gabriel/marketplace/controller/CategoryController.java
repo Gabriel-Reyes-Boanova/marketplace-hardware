@@ -40,4 +40,16 @@ public class CategoryController {
 
         return ResponseEntity.created(location).body(response);
     }
+
+    @DeleteMapping
+    public ResponseEntity<Void> deleteCategory(@RequestParam String title) {
+        service.deleteCategory(title);
+        return ResponseEntity.noContent().build();
+    }
+
+    @PutMapping
+    public ResponseEntity<CategoryResponse> updateCategory(@RequestParam String title, @RequestBody @Validated CategoryRequest request) {
+        CategoryResponse response = service.updateCategory(title, request);
+        return ResponseEntity.ok(response);
+    }
 }
